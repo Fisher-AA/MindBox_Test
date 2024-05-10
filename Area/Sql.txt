@@ -1,0 +1,74 @@
+CREATE TABLE Product
+(
+ Id int PRIMARY KEY identity(1,1),
+ ProductName nvarchar(255)
+)
+
+CREATE TABLE Category
+(
+ Id int PRIMARY KEY identity(1,1),
+ CategoryName nvarchar(255)
+)
+GO
+CREATE TABLE ProductCategory
+(
+ Id int PRIMARY KEY identity(1,1),
+ ProductId int NOT NULL,
+ CategoryId int NOT NULL,
+ CONSTRAINT FK_ProductCategory_To_Product FOREIGN  KEY (ProductId) References Product (Id),
+ CONSTRAINT FK_ProductCategory_To_Category FOREIGN  KEY (CategoryId) References Category (Id)
+)
+
+GO
+
+Insert into Product (ProductName) values ('Product1');
+Insert into Product (ProductName) values ('Product2');
+Insert into Product (ProductName) values ('Product3');
+Insert into Product (ProductName) values ('Product4');
+Insert into Product (ProductName) values ('Product5');
+Insert into Product (ProductName) values ('Product6');
+
+Insert into Category (CategoryName) values ('Category1');
+Insert into Category (CategoryName) values ('Category2');
+Insert into Category (CategoryName) values ('Category3');
+Insert into Category (CategoryName) values ('Category4');
+
+
+Insert into ProductCategory(ProductId,CategoryId) values (
+(select Id from Product where ProductName ='Product1'),
+(select Id from Category where CategoryName ='Category1')
+),
+(
+(select Id from Product where ProductName ='Product4'),
+(select Id from Category where CategoryName ='Category4')
+),
+(
+(select Id from Product where ProductName ='Product4'),
+(select Id from Category where CategoryName ='Category1')
+),
+(
+(select Id from Product where ProductName ='Product3'),
+(select Id from Category where CategoryName ='Category4')
+),
+(
+(select Id from Product where ProductName ='Product6'),
+(select Id from Category where CategoryName ='Category4')
+)
+
+SQL:
+
+select p.ProductName,c.CategoryName from Product as p 
+left join ProductCategory pc on p.Id = pc.ProductId
+left join Category c on c.Id = pc.CategoryId
+
+
+RESULT:
+
+ProductName	CategoryName
+Product1	Category1
+Product2	NULL
+Product3	Category4
+Product4	Category4
+Product4	Category1
+Product5	NULL
+Product6	Category4
